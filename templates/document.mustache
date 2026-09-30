@@ -1,0 +1,230 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_syllabus/document
+
+    Syllabus document. Used both on screen and (with forpdf) as TCPDF HTML input,
+    therefore it relies on simple tables and inline styles.
+
+    All text values are escaped in \local_syllabus\output\document; HTML-producing
+    values (links, multi-line texts) are output with triple braces.
+
+    Example context (json):
+    {
+        "forpdf": false,
+        "university": "ХЕРСОНСЬКИЙ ДЕРЖАВНИЙ УНІВЕРСИТЕТ",
+        "course_name": "Історія світової літератури",
+        "scheme": [{"ismodule": true, "title": "Модуль 1"}, {"ismodule": false, "number": 1, "title": "Вступ", "hours": "", "description": ""}],
+        "hasscheme": true,
+        "gradescale": {"header": "Залік", "rows": []}
+    }
+}}
+<div class="local-syllabus-doc">
+    {{#warnings}}
+        <div class="alert alert-warning">{{.}}</div>
+    {{/warnings}}
+
+    <div class="ls-page ls-title-page">
+        <div style="text-align:center; font-weight:bold;">
+            <div>{{ministry}}</div>
+            <div>{{university}}</div>
+            <div>{{faculty}}</div>
+        </div>
+        <br><br>
+        <table class="ls-approval" border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+            <tr>
+                <td style="width:50%;"></td>
+                <td style="width:50%;">
+                    <div style="font-weight:bold;">{{#str}}doc_approved, local_syllabus{{/str}}</div>
+                    <div>{{{approvedmeeting}}}</div>
+                    <div>{{{protocol}}}</div>
+                    <div>{{{deptheadline}}}</div>
+                    {{#signature}}
+                        <div class="ls-signature"><img src="{{{signature}}}" alt="" height="40"></div>
+                    {{/signature}}
+                    <div>________________ ({{{dept_head}}})</div>
+                </td>
+            </tr>
+        </table>
+        <br><br><br>
+        <div style="text-align:center;">
+            <h1 class="ls-doc-title" style="font-size:16pt; font-weight:bold;">{{#str}}doc_title, local_syllabus{{/str}}</h1>
+            <h2 class="ls-doc-course" style="font-size:14pt; font-weight:bold;">{{{course_name}}}</h2>
+        </div>
+        <br><br>
+        <div>
+            <div><b>{{#str}}f_educational_program, local_syllabus{{/str}}:</b> {{{educational_program}}}</div>
+            <div><b>{{#str}}f_specialty, local_syllabus{{/str}}:</b> {{{specialty}}}</div>
+            <div><b>{{#str}}f_field_of_study, local_syllabus{{/str}}:</b> {{{field_of_study}}}</div>
+            {{#education_level}}<div><b>{{#str}}f_education_level, local_syllabus{{/str}}:</b> {{{education_level}}}</div>{{/education_level}}
+        </div>
+        <br><br><br><br>
+        <div style="text-align:center;">{{{cityyear}}}</div>
+    </div>
+
+    {{#forpdf}}<br pagebreak="true"/>{{/forpdf}}
+
+    <div class="ls-page">
+        <table class="ls-table" border="1" cellpadding="4" cellspacing="0" style="width:100%;">
+            <tr><td style="width:35%;"><b>{{#str}}doc_coursename, local_syllabus{{/str}}</b></td><td style="width:65%;">{{{course_name}}}</td></tr>
+            <tr><td><b>{{#str}}doc_instructors, local_syllabus{{/str}}</b></td><td>{{{instructor}}}</td></tr>
+            <tr><td><b>{{#str}}f_site_link, local_syllabus{{/str}}</b></td><td>{{{site_link}}}</td></tr>
+            <tr><td><b>{{#str}}f_instructor_phone, local_syllabus{{/str}}</b></td><td>{{{instructor_phone}}}</td></tr>
+            <tr><td><b>{{#str}}f_instructor_email, local_syllabus{{/str}}</b></td><td>{{{instructor_email}}}</td></tr>
+            <tr><td><b>{{#str}}f_consultation_schedule, local_syllabus{{/str}}</b></td><td>{{{consultation_schedule}}}</td></tr>
+            {{#conference_service}}<tr><td><b>{{#str}}f_conference_service, local_syllabus{{/str}}</b></td><td>{{{conference_service}}}</td></tr>{{/conference_service}}
+            {{#final_control}}<tr><td><b>{{#str}}f_final_control, local_syllabus{{/str}}</b></td><td>{{{final_control}}}</td></tr>{{/final_control}}
+        </table>
+
+        {{#hasannotation}}
+            <h3 class="ls-section-title">1. {{#str}}doc_annotation, local_syllabus{{/str}}</h3>
+            <div class="ls-section-content">{{{annotation}}}</div>
+        {{/hasannotation}}
+
+        {{#hasgoals}}
+            <h3 class="ls-section-title">2. {{#str}}doc_goals, local_syllabus{{/str}}</h3>
+            <div class="ls-section-content">
+                {{{goals}}}
+                {{#tasks}}<div>– {{{.}}}</div>{{/tasks}}
+            </div>
+        {{/hasgoals}}
+
+        {{#hasoutcomes}}
+            <h3 class="ls-section-title">3. {{#str}}doc_outcomes, local_syllabus{{/str}}</h3>
+            <div class="ls-section-content">
+                {{#competencies}}<div>{{#code}}<b>{{{code}}}.</b> {{/code}}{{{text}}}</div>{{/competencies}}
+                {{#outcomes}}<div>{{#code}}<b>{{{code}}}.</b> {{/code}}{{{text}}}</div>{{/outcomes}}
+            </div>
+        {{/hasoutcomes}}
+
+        <h3 class="ls-section-title">4. {{#str}}doc_volume, local_syllabus{{/str}}</h3>
+        <table class="ls-table" border="1" cellpadding="4" cellspacing="0" style="width:100%; text-align:center;">
+            <thead>
+                <tr>
+                    <th><b>{{#str}}doc_creditshours, local_syllabus{{/str}}</b></th>
+                    <th><b>{{#str}}f_lecture_hours, local_syllabus{{/str}}</b></th>
+                    <th><b>{{#str}}f_practice_hours, local_syllabus{{/str}}</b></th>
+                    <th><b>{{#str}}f_self_hours, local_syllabus{{/str}}</b></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{{credits}}} / {{{total_hours}}}</td>
+                    <td>{{{lecture_hours}}}</td>
+                    <td>{{{practice_hours}}}</td>
+                    <td>{{{self_hours}}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 class="ls-section-title">5. {{#str}}doc_attributes, local_syllabus{{/str}}</h3>
+        <table class="ls-table" border="1" cellpadding="4" cellspacing="0" style="width:100%; text-align:center;">
+            <thead>
+                <tr>
+                    <th><b>{{#str}}doc_teachyear, local_syllabus{{/str}}</b></th>
+                    <th><b>{{#str}}f_semester, local_syllabus{{/str}}</b></th>
+                    <th><b>{{#str}}f_specialty, local_syllabus{{/str}}</b></th>
+                    <th><b>{{#str}}f_teach_year, local_syllabus{{/str}}</b></th>
+                    <th><b>{{#str}}f_course_type, local_syllabus{{/str}}</b></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{{startyear}}}</td>
+                    <td>{{{semester}}}</td>
+                    <td>{{{specialty}}}</td>
+                    <td>{{{teach_year}}}</td>
+                    <td>{{course_type}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 class="ls-section-title">6. {{#str}}doc_tech, local_syllabus{{/str}}</h3>
+        <div class="ls-section-content">{{{tech_requirements}}}</div>
+
+        {{#haspolicy}}
+            <h3 class="ls-section-title">7. {{#str}}doc_policy, local_syllabus{{/str}}</h3>
+            <div class="ls-section-content">{{{policy}}}</div>
+        {{/haspolicy}}
+
+        {{#hasprerequisites}}
+            <h3 class="ls-section-title">8. {{#str}}doc_prerequisites, local_syllabus{{/str}}</h3>
+            <div class="ls-section-content">
+                {{#prerequisites}}<div>– {{{.}}}</div>{{/prerequisites}}
+            </div>
+        {{/hasprerequisites}}
+
+        {{#hasscheme}}
+            <h3 class="ls-section-title">9. {{#str}}doc_scheme, local_syllabus{{/str}}</h3>
+            {{#scheme}}
+                {{#ismodule}}
+                    <div class="ls-module-header" style="font-weight:bold; text-align:center; text-transform:uppercase;"><br>{{{title}}}</div>
+                {{/ismodule}}
+                {{^ismodule}}
+                    <div class="ls-theme-title"><b>{{#str}}doc_theme, local_syllabus, {{number}}{{/str}} {{{title}}}</b>{{#hours}} <i class="ls-theme-hours">{{{hours}}}</i>{{/hours}}</div>
+                    {{#description}}<div class="ls-theme-content">{{{description}}}</div>{{/description}}
+                {{/ismodule}}
+            {{/scheme}}
+        {{/hasscheme}}
+
+        <h3 class="ls-section-title">10. {{#str}}doc_assessment, local_syllabus{{/str}}</h3>
+        {{#hasmodule1}}
+            <div class="ls-subsection-title"><b>10.1. {{#str}}doc_module1, local_syllabus{{/str}}</b></div>
+            <div class="ls-section-content">{{#str}}doc_formcriteria, local_syllabus{{/str}}<br>{{{module1_evaluation}}}</div>
+        {{/hasmodule1}}
+        {{#hasmodule2}}
+            <div class="ls-subsection-title"><b>10.2. {{#str}}doc_module2, local_syllabus{{/str}}</b></div>
+            <div class="ls-section-content">{{#str}}doc_formcriteria, local_syllabus{{/str}}<br>{{{module2_evaluation}}}</div>
+        {{/hasmodule2}}
+        {{#hasfinal}}
+            <div class="ls-subsection-title"><b>10.3. {{#str}}doc_finalcriteria, local_syllabus{{/str}}</b></div>
+            <div class="ls-section-content">{{{final_evaluation}}}</div>
+        {{/hasfinal}}
+
+        {{#gradescale}}
+            <p style="text-align:center;"><b>{{#str}}doc_scaletitle, local_syllabus{{/str}}</b></p>
+            <table class="ls-table ls-scale" border="1" cellpadding="4" cellspacing="0" style="width:100%; text-align:center;">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width:35%;"><b>{{#str}}doc_scalepoints, local_syllabus{{/str}}</b></th>
+                        <th rowspan="2" style="width:15%;"><b>{{#str}}doc_scaleects, local_syllabus{{/str}}</b></th>
+                        <th style="width:50%;"><b>{{#str}}doc_scalenational, local_syllabus{{/str}}</b></th>
+                    </tr>
+                    <tr><th style="width:50%;"><b>{{{header}}}</b></th></tr>
+                </thead>
+                <tbody>
+                    {{#rows}}
+                        <tr>
+                            <td style="width:35%;">{{points}}</td>
+                            <td style="width:15%;">{{ects}}</td>
+                            {{#hasmark}}<td rowspan="{{rowspan}}" style="width:50%;">{{mark}}</td>{{/hasmark}}
+                        </tr>
+                    {{/rows}}
+                </tbody>
+            </table>
+        {{/gradescale}}
+
+        {{#hasliterature}}
+            <h3 class="ls-section-title">11. {{#str}}doc_literature, local_syllabus{{/str}}</h3>
+            <div class="ls-section-content">
+                {{#lit_main}}<div><b>• {{#str}}doc_lit_main, local_syllabus{{/str}}</b></div>{{{lit_main}}}{{/lit_main}}
+                {{#lit_extra}}<div><b>• {{#str}}doc_lit_extra, local_syllabus{{/str}}</b></div>{{{lit_extra}}}{{/lit_extra}}
+                {{#lit_internet}}<div><b>• {{#str}}doc_lit_internet, local_syllabus{{/str}}</b></div>{{{lit_internet}}}{{/lit_internet}}
+            </div>
+        {{/hasliterature}}
+    </div>
+</div>
