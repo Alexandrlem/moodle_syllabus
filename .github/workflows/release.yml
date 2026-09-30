@@ -36,10 +36,10 @@ jobs:
         with:
           files: ${{ steps.build.outputs.zip }}
 
-      # Pushes to the default branch publish (or refresh) the release
+      # Pushes to main publish (or refresh) the release
       # v<$plugin->release>; the tag is created through the GitHub API.
-      - name: Publish release from default branch
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      - name: Publish release from main
+        if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.build.outputs.release }}
