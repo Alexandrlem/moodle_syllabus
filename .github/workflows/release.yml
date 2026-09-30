@@ -20,15 +20,32 @@ jobs:
 
       - name: Build ZIP
         id: build
-        run: echo "zip=$(./build.sh dist)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "zip=$(./build.sh dist)" >> "$GITHUB_OUTPUT"
+          echo "release=$(sed -n "s/^\$plugin->release *= *'\(.*\)';.*/\1/p" version.php)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/upload-artifact@v4
         with:
           name: local_syllabus
           path: ${{ steps.build.outputs.zip }}
 
-      - name: Attach ZIP to release
+      # Tag pushes attach the ZIP to that tag's release.
+      - name: Attach ZIP to tag release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.build.outputs.zip }}
+
+      # Pushes to the default branch publish (or refresh) the release
+      # v<$plugin->release>; the tag is created through the GitHub API.
+      - name: Publish release from default branch
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.build.outputs.release }}
+          name: local_syllabus ${{ steps.build.outputs.release }}
+          target_commitish: ${{ github.sha }}
+          files: ${{ steps.build.outputs.zip }}
+          body: |
+            Installable ZIP of the Moodle plugin local_syllabus ${{ steps.build.outputs.release }}.
+            Install: Site administration > Plugins > Install plugins > upload local_syllabus-${{ steps.build.outputs.release }}.zip
